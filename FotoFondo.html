@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foto con Fondo Divertido - Redes Sociales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f1ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8e9ff;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .upload-text strong {
+            color: #667eea;
+        }
+
+        .backgrounds {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .background-option {
+            position: relative;
+            border-radius: 12px;
+            cursor: pointer;
+            overflow: hidden;
+            border: 3px solid #ddd;
+            transition: all 0.3s ease;
+            height: 120px;
+        }
+
+        .background-option:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .background-option.active {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .bg-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .preview-container {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-preview {
+            color: #999;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .resolution-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .resolution-group label {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .resolution-group select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .resolution-group select:hover,
+        .resolution-group select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .scale-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .scale-controls label {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .scale-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .scale-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .scale-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .scale-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .position-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .position-btn {
+            padding: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .position-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .position-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .footer {
+            background: #f8f9ff;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Foto con Fondo Divertido</h1>
+            <p>Sube tu foto, elige un fondo, y descárgala en alta resolución para redes sociales</p>
+        </div>
+
+        <div class="content">
+            <!-- Sección de Carga y Fondos -->
+            <div class="section">
+                <h2>
+                    <span>⬆️</span>
+                    Sube tu foto(s)
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <div class="upload-area" id="uploadArea1">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">
+                            <strong>Foto 1</strong><br>
+                            <small>Haz clic aquí</small>
+                        </div>
+                        <input type="file" id="fileInput1" accept="image/*">
+                    </div>
+                    <div class="upload-area" id="uploadArea2">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">
+                            <strong>Foto 2 (Opcional)</strong><br>
+                            <small>Haz clic aquí</small>
+                        </div>
+                        <input type="file" id="fileInput2" accept="image/*">
+                    </div>
+                </div>
+
+                <div id="uploadedPhotos" style="display: none; margin-bottom: 20px;">
+                    <h3 style="font-size: 14px; color: #333; margin-bottom: 10px;">Fotos cargadas:</h3>
+                    <div id="photosList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
+                    <button type="button" class="button" style="background: #ff6b6b; color: white; width: 100%; margin-top: 10px;" id="clearPhotosBtn">
+                        🗑️ Eliminar todas las fotos
+                    </button>
+                </div>
+
+                <h2 style="margin-top: 30px;">
+                    <span>🎨</span>
+                    Elige un fondo divertido
+                </h2>
+
+                <div class="backgrounds" id="backgroundsContainer"></div>
+            </div>
+
+            <!-- Sección de Vista Previa y Descarga -->
+            <div class="section">
+                <h2>
+                    <span>👁️</span>
+                    Vista previa
+                </h2>
+
+                <div class="preview-container">
+                    <canvas id="previewCanvas"></canvas>
+                    <div class="no-preview" id="noPreview">Carga una foto y selecciona un fondo</div>
+                </div>
+
+                <div id="photoControls" style="display: none;">
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-size: 14px; color: #333; font-weight: 600; display: block; margin-bottom: 10px;">Selecciona qué foto editar:</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button type="button" class="button" style="background: #ddd; color: #333;" id="selectPhoto1Btn">
+                                📸 Foto 1
+                            </button>
+                            <button type="button" class="button" style="background: #ddd; color: #333; display: none;" id="selectPhoto2Btn">
+                                📸 Foto 2
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="scale-controls">
+                        <label for="scaleSlider">Tamaño:</label>
+                        <input type="range" id="scaleSlider" class="scale-slider" min="0.3" max="2" step="0.1" value="1">
+                        <span class="scale-value" id="scaleValue">100%</span>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 14px; font-weight: 600; color: #333; display: block; margin-bottom: 10px;">Posición:</label>
+                        <div class="position-controls">
+                            <button class="position-btn" data-position="top-left">↖️</button>
+                            <button class="position-btn" data-position="top-center">⬆️</button>
+                            <button class="position-btn" data-position="top-right">↗️</button>
+                            <button class="position-btn" data-position="center-left">⬅️</button>
+                            <button class="position-btn active" data-position="center-center">◉</button>
+                            <button class="position-btn" data-position="center-right">➡️</button>
+                            <button class="position-btn" data-position="bottom-left">↙️</button>
+                            <button class="position-btn" data-position="bottom-center">⬇️</button>
+                            <button class="position-btn" data-position="bottom-right">↘️</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 12px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #667eea;">
+                        <p style="font-size: 12px; color: #333; margin: 0;">
+                            💡 <strong>Consejo:</strong> Usa diferentes tamaños y posiciones para las fotos
+                        </p>
+                    </div>
+                </div>
+
+                <div class="resolution-group">
+                    <label for="resolutionSelect">Resolución de descarga:</label>
+                    <select id="resolutionSelect">
+                        <option value="1080">1080x1080px (Instagram)</option>
+                        <option value="1200">1200x1200px (Recomendado)</option>
+                        <option value="1600">1600x1600px (Alta)</option>
+                        <option value="2048">2048x2048px (Muy Alta)</option>
+                    </select>
+                </div>
+
+                <button class="button btn-download" id="downloadBtn">
+                    💾 Descargar Imagen
+                </button>
+
+                <div class="feedback" id="feedback"></div>
+                <div class="info-text" id="infoText">Carga una foto para habilitar la descarga</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💡 Consejo: La mejor resolución es 1200x1200px para redes sociales</p>
+        </div>
+    </div>
+
+    <script>
+        // Definir fondos divertidos
+        const backgrounds = [
+            {
+                name: 'Playa Sunset',
+                create: (ctx, width, height) => {
+                    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+                    gradient.addColorStop(0, '#FF6B6B');
+                    gradient.addColorStop(0.5, '#FFA500');
+                    gradient.addColorStop(1, '#87CEEB');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Palmeritas
+                    ctx.fillStyle = '#228B22';
+                    ctx.beginPath();
+                    ctx.arc(width * 0.15, height * 0.8, 30, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#228B22';
+                    ctx.beginPath();
+                    ctx.arc(width * 0.85, height * 0.7, 35, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            },
+            {
+                name: 'Fiesta Colores',
+                create: (ctx, width, height) => {
+                    const colors = ['#FF1493', '#00BFFF', '#32CD32', '#FFD700', '#FF69B4'];
+                    const blockSize = width / 5;
+                    colors.forEach((color, i) => {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(i * blockSize, 0, blockSize, height);
+                    });
+                    
+                    // Confeti
+                    ctx.font = 'bold 30px Arial';
+                    for (let i = 0; i < 20; i++) {
+                        ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                        ctx.globalAlpha = 0.7;
+                        ctx.fillText('✨', Math.random() * width, Math.random() * height);
+                    }
+                    ctx.globalAlpha = 1;
+                }
+            },
+            {
+                name: 'Galaxia',
+                create: (ctx, width, height) => {
+                    ctx.fillStyle = '#0a0e27';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Estrellas
+                    ctx.fillStyle = '#FFFFFF';
+                    for (let i = 0; i < 200; i++) {
+                        const x = Math.random() * width;
+                        const y = Math.random() * height;
+                        const size = Math.random() * 2;
+                        ctx.beginPath();
+                        ctx.arc(x, y, size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    // Gradiente galaxia
+                    const gradient = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2);
+                    gradient.addColorStop(0, 'rgba(255, 20, 147, 0.3)');
+                    gradient.addColorStop(0.5, 'rgba(30, 144, 255, 0.2)');
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+                }
+            },
+            {
+                name: 'Tropical',
+                create: (ctx, width, height) => {
+                    ctx.fillStyle = '#E0FF00';
+                    ctx.fillRect(0, 0, width, height * 0.4);
+                    ctx.fillStyle = '#00CED1';
+                    ctx.fillRect(0, height * 0.4, width, height * 0.6);
+                    
+                    // Hojas tropicales
+                    ctx.fillStyle = '#FF1493';
+                    ctx.font = 'bold 60px Arial';
+                    ctx.fillText('🌺', width * 0.2, height * 0.3);
+                    ctx.fillText('🌺', width * 0.75, height * 0.35);
+                    ctx.fillText('🐠', width * 0.5, height * 0.7);
+                    ctx.fillText('🐙', width * 0.3, height * 0.8);
+                }
+            },
+            {
+                name: 'Neon Rosa',
+                create: (ctx, width, height) => {
+                    ctx.fillStyle = '#1a1a2e';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    const gradient = ctx.createLinearGradient(0, 0, width, height);
+                    gradient.addColorStop(0, '#FF006E');
+                    gradient.addColorStop(0.5, '#C912FF');
+                    gradient.addColorStop(1, '#00D9FF');
+                    ctx.fillStyle = gradient;
+                    ctx.globalAlpha = 0.4;
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.globalAlpha = 1;
+                    
+                    // Grid neon
+                    ctx.strokeStyle = '#FF006E';
+                    ctx.globalAlpha = 0.2;
+                    const gridSize = 50;
+                    for (let i = 0; i <= width; i += gridSize) {
+                        ctx.beginPath();
+                        ctx.moveTo(i, 0);
+                        ctx.lineTo(i, height);
+                        ctx.stroke();
+                    }
+                    for (let i = 0; i <= height; i += gridSize) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, i);
+                        ctx.lineTo(width, i);
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1;
+                }
+            },
+            {
+                name: 'Flores Primadera',
+                create: (ctx, width, height) => {
+                    ctx.fillStyle = '#87CEEB';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    ctx.fillStyle = '#90EE90';
+                    ctx.fillRect(0, height * 0.6, width, height * 0.4);
+                    
+                    // Flores
+                    ctx.font = 'bold 50px Arial';
+                    ctx.fillText('🌸', width * 0.15, height * 0.25);
+                    ctx.fillText('🌸', width * 0.85, height * 0.35);
+                    ctx.fillText('🌻', width * 0.5, height * 0.15);
+                    ctx.fillText('🌼', width * 0.7, height * 0.5);
+                    ctx.fillText('🌼', width * 0.3, height * 0.55);
+                }
+            }
+        ];
+
+        // Variables globales
+        const photos = [null, null]; // Dos fotos máximo
+        let selectedBackground = 0;
+        let currentPhotoIndex = 0; // Índice de la foto que se está editando
+        const photoControls = {
+            0: { scale: 1, position: 'center-center' },
+            1: { scale: 1, position: 'center-center' }
+        };
+
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        const noPreview = document.getElementById('noPreview');
+        const photoControls1 = document.getElementById('photoControls');
+        const uploadedPhotosDiv = document.getElementById('uploadedPhotos');
+        const photosList = document.getElementById('photosList');
+
+        // Elements
+        const uploadArea1 = document.getElementById('uploadArea1');
+        const uploadArea2 = document.getElementById('uploadArea2');
+        const fileInput1 = document.getElementById('fileInput1');
+        const fileInput2 = document.getElementById('fileInput2');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const scaleSlider = document.getElementById('scaleSlider');
+        const resolutionSelect = document.getElementById('resolutionSelect');
+        const selectPhoto1Btn = document.getElementById('selectPhoto1Btn');
+        const selectPhoto2Btn = document.getElementById('selectPhoto2Btn');
+        const clearPhotosBtn = document.getElementById('clearPhotosBtn');
+
+        // Event Listeners para subir fotos
+        uploadArea1.addEventListener('click', () => fileInput1.click());
+        uploadArea2.addEventListener('click', () => fileInput2.click());
+
+        fileInput1.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFileUpload(0, e.target.files[0]);
+        });
+
+        fileInput2.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFileUpload(1, e.target.files[0]);
+        });
+
+        scaleSlider.addEventListener('input', (e) => {
+            photoControls[currentPhotoIndex].scale = parseFloat(e.target.value);
+            document.getElementById('scaleValue').textContent = Math.round(photoControls[currentPhotoIndex].scale * 100) + '%';
+            updatePreview();
+        });
+
+        selectPhoto1Btn.addEventListener('click', () => selectPhotoToEdit(0));
+        selectPhoto2Btn.addEventListener('click', () => selectPhotoToEdit(1));
+        clearPhotosBtn.addEventListener('click', clearAllPhotos);
+        downloadBtn.addEventListener('click', downloadImage);
+
+        // Crear botones de fondos
+        function createBackgroundButtons() {
+            const container = document.getElementById('backgroundsContainer');
+            container.innerHTML = '';
+            
+            backgrounds.forEach((bg, index) => {
+                const button = document.createElement('div');
+                button.className = `background-option ${index === 0 ? 'active' : ''}`;
+                button.title = bg.name;
+                
+                const preview = document.createElement('canvas');
+                preview.width = 200;
+                preview.height = 200;
+                const previewCtx = preview.getContext('2d');
+                bg.create(previewCtx, 200, 200);
+                
+                const bgPreview = document.createElement('div');
+                bgPreview.className = 'bg-preview';
+                bgPreview.style.backgroundImage = `url(${preview.toDataURL()})`;
+                bgPreview.style.backgroundSize = 'cover';
+                bgPreview.textContent = bg.name;
+                
+                button.appendChild(bgPreview);
+                button.addEventListener('click', () => selectBackground(index));
+                container.appendChild(button);
+            });
+        }
+
+        function selectBackground(index) {
+            selectedBackground = index;
+            document.querySelectorAll('.background-option').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+            updatePreview();
+        }
+
+        function handleFileUpload(photoIndex, file) {
+            if (file.size > 10 * 1024 * 1024) {
+                showFeedback('El archivo es demasiado grande. Máximo 10MB', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    photos[photoIndex] = img;
+                    currentPhotoIndex = photoIndex;
+                    updatePhotosList();
+                    photoControls1.style.display = 'block';
+                    noPreview.style.display = 'none';
+                    updatePreview();
+                    downloadBtn.disabled = false;
+                    document.getElementById('infoText').textContent = 'Imagen(s) cargada(s). Selecciona resolución y descarga.';
+                    
+                    // Limpiar input
+                    if (photoIndex === 0) fileInput1.value = '';
+                    else fileInput2.value = '';
+
+                    // Actualizar botones de selección
+                    if (photoIndex === 1) {
+                        selectPhoto2Btn.style.display = 'flex';
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updatePhotosList() {
+            photosList.innerHTML = '';
+            photos.forEach((photo, index) => {
+                if (photo) {
+                    const photoItem = document.createElement('div');
+                    photoItem.className = `background-option ${currentPhotoIndex === index ? 'active' : ''}`;
+                    photoItem.style.height = 'auto';
+                    photoItem.style.paddingTop = '100%';
+                    photoItem.style.position = 'relative';
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.src;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.position = 'absolute';
+                    img.style.top = '0';
+                    img.style.left = '0';
+                    img.style.borderRadius = '8px';
+                    
+                    const label = document.createElement('div');
+                    label.textContent = `Foto ${index + 1}`;
+                    label.style.position = 'absolute';
+                    label.style.bottom = '5px';
+                    label.style.right = '5px';
+                    label.style.background = 'rgba(0,0,0,0.7)';
+                    label.style.color = 'white';
+                    label.style.padding = '3px 8px';
+                    label.style.borderRadius = '4px';
+                    label.style.fontSize = '11px';
+                    
+                    photoItem.appendChild(img);
+                    photoItem.appendChild(label);
+                    photoItem.addEventListener('click', () => selectPhotoToEdit(index));
+                    photosList.appendChild(photoItem);
+                }
+            });
+
+            uploadedPhotosDiv.style.display = photos.some(p => p !== null) ? 'block' : 'none';
+        }
+
+        function selectPhotoToEdit(index) {
+            if (!photos[index]) return;
+            currentPhotoIndex = index;
+            scaleSlider.value = photoControls[index].scale;
+            document.getElementById('scaleValue').textContent = Math.round(photoControls[index].scale * 100) + '%';
+            
+            // Actualizar botones de posición
+            document.querySelectorAll('.position-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.position === photoControls[index].position);
+            });
+
+            updatePhotosList();
+            updatePreview();
+        }
+
+        function updatePreview() {
+            if (!photos.some(p => p !== null)) return;
+
+            const previewSize = 800;
+            canvas.width = previewSize;
+            canvas.height = previewSize;
+
+            // Dibujar fondo
+            backgrounds[selectedBackground].create(ctx, previewSize, previewSize);
+
+            // Dibujar cada foto
+            photos.forEach((photo, index) => {
+                if (!photo) return;
+
+                const scale = photoControls[index].scale;
+                const position = photoControls[index].position;
+                const imgWidth = previewSize * 0.6 * scale;
+                const imgHeight = (photo.height / photo.width) * imgWidth;
+
+                let x, y;
+                const positions = {
+                    'top-left': [50, 50],
+                    'top-center': [previewSize / 2 - imgWidth / 2, 50],
+                    'top-right': [previewSize - imgWidth - 50, 50],
+                    'center-left': [50, previewSize / 2 - imgHeight / 2],
+                    'center-center': [previewSize / 2 - imgWidth / 2, previewSize / 2 - imgHeight / 2],
+                    'center-right': [previewSize - imgWidth - 50, previewSize / 2 - imgHeight / 2],
+                    'bottom-left': [50, previewSize - imgHeight - 50],
+                    'bottom-center': [previewSize / 2 - imgWidth / 2, previewSize - imgHeight - 50],
+                    'bottom-right': [previewSize - imgWidth - 50, previewSize - imgHeight - 50]
+                };
+
+                [x, y] = positions[position];
+
+                // Dibujar imagen con sombra
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 5;
+                ctx.shadowOffsetY = 5;
+                ctx.drawImage(photo, x, y, imgWidth, imgHeight);
+                ctx.shadowColor = 'transparent';
+            });
+        }
+
+        function downloadImage() {
+            if (!photos.some(p => p !== null)) return;
+
+            const resolution = parseInt(document.getElementById('resolutionSelect').value);
+            const downloadCanvas = document.createElement('canvas');
+            downloadCanvas.width = resolution;
+            downloadCanvas.height = resolution;
+            const downloadCtx = downloadCanvas.getContext('2d');
+
+            // Dibujar fondo
+            backgrounds[selectedBackground].create(downloadCtx, resolution, resolution);
+
+            // Dibujar cada foto
+            photos.forEach((photo, index) => {
+                if (!photo) return;
+
+                const scale = photoControls[index].scale;
+                const position = photoControls[index].position;
+                const imgWidth = resolution * 0.6 * scale;
+                const imgHeight = (photo.height / photo.width) * imgWidth;
+
+                let x, y;
+                const positions = {
+                    'top-left': [50, 50],
+                    'top-center': [resolution / 2 - imgWidth / 2, 50],
+                    'top-right': [resolution - imgWidth - 50, 50],
+                    'center-left': [50, resolution / 2 - imgHeight / 2],
+                    'center-center': [resolution / 2 - imgWidth / 2, resolution / 2 - imgHeight / 2],
+                    'center-right': [resolution - imgWidth - 50, resolution / 2 - imgHeight / 2],
+                    'bottom-left': [50, resolution - imgHeight - 50],
+                    'bottom-center': [resolution / 2 - imgWidth / 2, resolution - imgHeight - 50],
+                    'bottom-right': [resolution - imgWidth - 50, resolution - imgHeight - 50]
+                };
+
+                [x, y] = positions[position];
+
+                // Dibujar imagen
+                downloadCtx.drawImage(photo, x, y, imgWidth, imgHeight);
+            });
+
+            // Descargar
+            downloadCanvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `foto-fondo-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showFeedback('¡Imagen descargada exitosamente!', 'success');
+            });
+        }
+
+        function clearAllPhotos() {
+            photos[0] = null;
+            photos[1] = null;
+            currentPhotoIndex = 0;
+            fileInput1.value = '';
+            fileInput2.value = '';
+            updatePhotosList();
+            photoControls1.style.display = 'none';
+            noPreview.style.display = 'block';
+            selectPhoto2Btn.style.display = 'none';
+            downloadBtn.disabled = true;
+            document.getElementById('infoText').textContent = 'Carga una foto para habilitar la descarga';
+            canvas.width = 800;
+            canvas.height = 800;
+            backgrounds[selectedBackground].create(ctx, 800, 800);
+        }
+
+        // Manejo de botones de posición
+        document.querySelectorAll('.position-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                photoControls[currentPhotoIndex].position = btn.dataset.position;
+                updatePreview();
+            });
+        });
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+            setTimeout(() => {
+                feedback.className = 'feedback';
+            }, 3000);
+        }
+
+        // Inicializar
+        createBackgroundButtons();
+    </script>
+</body>
+</html>
